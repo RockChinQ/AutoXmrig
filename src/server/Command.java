@@ -49,6 +49,15 @@ public class Command extends Thread{
                         System.out.println("[COMMAND]one");
                         break;
                     }
+                    case "test":{
+                        long now=new Date().getTime();
+                        for (Listener.AXClientConn conn:Listener.conns){
+                            if (now-conn.lsResponseTime>ServerMain.alivePeriod*3){
+                                conn.kill();
+                            }
+                        }
+                        break;
+                    }
                     case "@":{
                         if (cmdSpt[1].startsWith("&")){
                             Listener.focused=Listener.conns.get(Integer.parseInt(cmdSpt[1].substring(1)));

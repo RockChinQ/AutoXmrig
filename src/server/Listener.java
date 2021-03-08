@@ -26,6 +26,7 @@ public class Listener extends Thread{
         public String pass="N/A";
         public int shares=0;
         public String startTime="undefined";
+        public long lsResponseTime=0;
         public AXClientConn(Socket socket)throws Exception{
             this.socket=socket;
             tcpr=new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -64,10 +65,14 @@ public class Listener extends Thread{
                             startTime=msgSpt[1];
                             break;
                         }
+                        case "response":{
+                            break;
+                        }
                         default:{
+                            lsResponseTime=new Date().getTime();
                             if (printMode==EVERY||(printMode==ONE&&focused==this))
                                 System.out.print("[CONN-"+pass+"]"+msg+(msg.endsWith("\n")?"":"\n"));
-                            if (msg.contains("miner")){
+                            if (msg.contains("speed")){
                                 int speedIdx=msg.indexOf("m ");
                                 String[] speedSS=msg.substring(speedIdx+2,msg.indexOf("H/s")-1).split(" ");
                                 if (!speedSS[0].equalsIgnoreCase("n/a")){
@@ -85,6 +90,7 @@ public class Listener extends Thread{
 //                                this.shares=Integer.parseInt(msg.substring(msg.indexOf("d (")+3,msg.indexOf("diff")-4));
                                 this.shares++;
                                 ServerMain.totalShares++;
+                                this.lsUpdateTime=TimeUtil.millsToMMDDHHmmSS(new Date().getTime());
                             }
                         }
                     }
@@ -96,6 +102,7 @@ public class Listener extends Thread{
         }
         public void kill(){
             try {
+                writeNonBlocked("!exit");
                 socket.close();
             }catch (Exception ignored){}
             conns.remove(this);

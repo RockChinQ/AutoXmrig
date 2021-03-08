@@ -36,6 +36,10 @@ public class Connect extends Thread{
                                 writeNonBlocked("[CONNECT]stdout "+AXMain.printToStdout);
                                 break;
                             }
+                            case "!request":{
+                                writeNonBlocked("response");
+                                break;
+                            }
                         }
                     }catch (Exception e){
                         AXMain.connect.writeNonBlocked("[CONNECT]command error");
