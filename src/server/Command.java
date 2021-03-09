@@ -14,16 +14,16 @@ public class Command extends Thread{
                 cc:switch (cmdSpt[0]){
                     case "list":{
                         int idx=0;
-                        System.out.println("[LIST]devicePass\t10s\t60s\t15m\tshares\tcheckTime\tstartTime");
+                        System.out.println("[LIST-TABLE]cptPass\t10s\t60s\t15m\tshares\tcheckTime\tstartTime");
                         int t10sRate=0,t60sRate=0,t15mRate=0,tShares=0;
                         for (Listener.AXClientConn conn: Listener.conns){
                             t10sRate+=conn.rate10s;
                             t60sRate+=conn.rate60s;
                             t15mRate+=conn.rate15m;
                             tShares+=conn.shares;
-                            System.out.println("[LIST-"+idx+++"]"+conn.pass+"\t"+conn.rate10s+"\t"+conn.rate60s+"\t"+conn.rate15m+"\t"+conn.shares+"\t"+conn.lsUpdateTime+"\t"+conn.startTime);
+                            System.out.println("[LIST-"+idx+++"]"+String.format("%-14s", conn.pass)+"\t"+conn.rate10s+"\t"+conn.rate60s+"\t"+conn.rate15m+"\t"+conn.shares+"\t"+conn.lsUpdateTime+"\t"+conn.startTime);
                         }
-                        System.out.println("[LIST-TOTAL]dev"+Listener.conns.size()+"\t"+t10sRate+"\t"+t60sRate+"\t"+t15mRate+"\t"+ServerMain.totalShares);
+                        System.out.println("[LIST-TOTAL]dev "+Listener.conns.size()+"\t"+t10sRate+"\t"+t60sRate+"\t"+t15mRate+"\t"+ServerMain.totalShares);
                         System.out.println("[INFO]since"+ServerMain.serverStart+" now"+TimeUtil.millsToMMDDHHmmSS(new Date().getTime())+" @"+Listener.focused.pass);
                         break;
                     }
