@@ -1,5 +1,6 @@
 package server;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.TimerTask;
 
@@ -7,11 +8,15 @@ public class AliveResponse extends TimerTask {
 	public void run(){
 		try{
 			long now=new Date().getTime();
+			ArrayList<Listener.AXClientConn> kill=new ArrayList<>();
 			for (Listener.AXClientConn conn:Listener.conns){
-				conn.writeNonBlocked("!request");
-				if (now-conn.lsResponseTime>ServerMain.alivePeriod*3){
-					conn.kill();
+				if (now-conn.lsResponseTime>ServerMain.alivePeriod*10){
+					System.out.println("[ALIVE]close conn pass:"+conn.pass);
+					kill.add(conn);
 				}
+			}
+			for (Listener.AXClientConn conn:kill){
+				conn.kill();
 			}
 		}catch (Exception ignored){
 
