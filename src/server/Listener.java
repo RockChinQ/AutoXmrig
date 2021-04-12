@@ -123,9 +123,12 @@ public class Listener extends Thread{
         public void kill(){
             try {
                 writeNonBlocked("!exit");
+                Thread.sleep(200);
                 socket.close();
             }catch (Exception ignored){}
-            conns.remove(this);
+            try {
+                conns.remove(this);
+            }catch (Exception ignored){}
         }
     }
 

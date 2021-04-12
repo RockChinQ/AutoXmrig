@@ -21,7 +21,6 @@ public class AliveResponse extends TimerTask {
 				conn.kill();
 			}
 		}catch (Exception ignored){
-
 		}
 	}
 }
