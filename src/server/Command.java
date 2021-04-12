@@ -1,5 +1,7 @@
 package server;
 
+import universal.Out;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.Date;
@@ -14,17 +16,17 @@ public class Command extends Thread{
                 cc:switch (cmdSpt[0]){
                     case "list":{
                         int idx=0;
-                        System.out.println("[LIST-TABLE]cptPass\t10s\t60s\t15m\tshares\tcheckTime\tstartTime");
+                        Out.sayWithTimeLn("[LIST-TABLE]cptPass\t10s\t60s\t15m\tshares\tcheckTime\tstartTime");
                         int t10sRate=0,t60sRate=0,t15mRate=0,tShares=0;
                         for (Listener.AXClientConn conn: Listener.conns){
                             t10sRate+=conn.rate10s;
                             t60sRate+=conn.rate60s;
                             t15mRate+=conn.rate15m;
                             tShares+=conn.shares;
-                            System.out.println("[LIST-"+idx+++"]"+String.format("%-14s", conn.pass)+"\t"+conn.rate10s+"\t"+conn.rate60s+"\t"+conn.rate15m+"\t"+conn.shares+"\t"+conn.lsUpdateTime+"\t"+conn.startTime);
+                            Out.sayWithTimeLn("[LIST-"+idx+++"]"+String.format("%-14s", conn.pass)+"\t"+conn.rate10s+"\t"+conn.rate60s+"\t"+conn.rate15m+"\t"+conn.shares+"\t"+conn.lsUpdateTime+"\t"+conn.startTime);
                         }
-                        System.out.println("[LIST-TOTAL]dev "+Listener.conns.size()+"\t"+t10sRate+"\t"+t60sRate+"\t"+t15mRate+"\t"+ServerMain.totalShares);
-                        System.out.println("[INFO]since"+ServerMain.serverStart+" now"+TimeUtil.millsToMMDDHHmmSS(new Date().getTime())+" @"+Listener.focused.pass);
+                        Out.sayWithTimeLn("[LIST-TOTAL]dev "+Listener.conns.size()+"\t"+t10sRate+"\t"+t60sRate+"\t"+t15mRate+"\t"+ServerMain.totalShares);
+                        Out.sayWithTimeLn("[INFO]since"+ServerMain.serverStart+" now"+TimeUtil.millsToMMDDHHmmSS(new Date().getTime())+" @"+Listener.focused.pass);
                         break;
                     }
                     case "all":{
@@ -36,17 +38,17 @@ public class Command extends Thread{
                     }
                     case "quiet":{
                         Listener.printMode=Listener.QUIET;
-                        System.out.println("[COMMAND]quiet");
+                        Out.sayWithTimeLn("[COMMAND]quiet");
                         break;
                     }
                     case "every":{
                         Listener.printMode=Listener.EVERY;
-                        System.out.println("[COMMAND]every");
+                        Out.sayWithTimeLn("[COMMAND]every");
                         break;
                     }
                     case "one":{
                         Listener.printMode=Listener.ONE;
-                        System.out.println("[COMMAND]one");
+                        Out.sayWithTimeLn("[COMMAND]one");
                         break;
                     }
                     case "test":{
@@ -58,19 +60,32 @@ public class Command extends Thread{
                         }
                         break;
                     }
+                    case "exit":{
+                        if (cmdSpt.length>1) {
+                            try {
+                                Listener.exitAllClient = Boolean.parseBoolean(cmdSpt[1]);
+                                Out.sayWithTimeLn("[COMMAND]exit any:" + Listener.exitAllClient);
+                            } catch (Exception e) {
+                                Out.sayWithTimeLn("[COMMAND]syntax err");
+                            }
+                        }else {
+                            Out.sayWithTimeLn("[COMMAND]exit any:"+Listener.exitAllClient);
+                        }
+                        break;
+                    }
                     case "@":{
                         if (cmdSpt[1].startsWith("&")){
                             Listener.focused=Listener.conns.get(Integer.parseInt(cmdSpt[1].substring(1)));
-                            System.out.println("[COMMAND]@"+Listener.focused.pass);
+                            Out.sayWithTimeLn("[COMMAND]@"+Listener.focused.pass);
                         }else{
                             for (Listener.AXClientConn conn:Listener.conns){
                                 if (conn.pass.startsWith(cmdSpt[1])){
                                     Listener.focused=conn;
-                                    System.out.println("[COMMAND]@"+Listener.focused.pass);
+                                    Out.sayWithTimeLn("[COMMAND]@"+Listener.focused.pass);
                                     break cc;
                                 }
                             }
-                            System.out.println("[COMMAND]no such conn");
+                            Out.sayWithTimeLn("[COMMAND]no such conn");
                         }
                         break;
                     }
@@ -80,7 +95,7 @@ public class Command extends Thread{
                     }
                 }
             }catch (Exception e){
-                System.out.println("[SERVER]err at command");
+                Out.sayWithTimeLn("[SERVER]err at command");
             }
         }
     }

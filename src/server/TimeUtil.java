@@ -11,4 +11,8 @@ public class TimeUtil {
         Date d=new Date(mills);
         return (d.getMonth()+1)+"-"+d.getDate()+"_"+d.getHours()+"-"+d.getMinutes()+"-"+d.getSeconds();
     }
+    public static String nowMMDDHHmmSS(){
+        Date d=new Date();
+        return (d.getMonth()+1)+"-"+d.getDate()+","+d.getHours()+":"+d.getMinutes()+":"+d.getSeconds();
+    }
 }

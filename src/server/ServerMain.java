@@ -1,5 +1,7 @@
 package server;
 
+import universal.Out;
+
 import java.util.Date;
 import java.util.Timer;
 
@@ -13,6 +15,6 @@ public class ServerMain {
         listener.start();
         command.start();
         new Timer().schedule(new AliveResponse(),new Date(),alivePeriod);
-        System.out.println("[MAIN]server started");
+        Out.sayWithTimeLn("[MAIN]server started");
     }
 }

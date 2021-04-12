@@ -1,5 +1,7 @@
 package server;
 
+import universal.Out;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.InputStreamReader;
@@ -10,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 public class Listener extends Thread{
+    public static boolean exitAllClient=false;
     public int port=1030;
     public static ArrayList<AXClientConn> conns=new ArrayList<>();
     public static AXClientConn focused;
@@ -27,6 +30,7 @@ public class Listener extends Thread{
         public int shares=0;
         public String startTime="undefined";
         public long lsResponseTime=0;
+        public String state="hang-up";
         public AXClientConn(Socket socket)throws Exception{
             this.socket=socket;
             tcpr=new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -50,14 +54,20 @@ public class Listener extends Thread{
             try {
                 while (true) {
                     String msg=tcpr.readLine();
+//                    System.out.println(msg);
                     String[] msgSpt=msg.split(" ");
+                    lsResponseTime=new Date().getTime();
                     switch (msgSpt[0]){
                         case "pass":{
                             this.pass=msgSpt[1];
-                            System.out.println("[CONN]new conn pass:"+pass);
+                            Out.sayWithTimeLn("[CONN]new conn pass:"+pass);
                             if (focused==null){
                                 focused=this;
-                                System.out.println("[LISTENER]@"+pass);
+                                Out.sayWithTimeLn("[LISTENER]@"+pass);
+                            }
+                            if (exitAllClient){
+                                Out.sayWithTimeLn("[CONN]exit any client.");
+                                writeIgnoreExce("!exit");
                             }
                             break;
                         }
@@ -68,21 +78,30 @@ public class Listener extends Thread{
                         case "response":{
                             break;
                         }
+                        case "state":{
+                            this.state=msgSpt[1];
+                            break;
+                        }
                         default:{
-                            lsResponseTime=new Date().getTime();
                             if (printMode==EVERY||(printMode==ONE&&focused==this))
-                                System.out.print("[CONN-"+pass+"]"+msg+(msg.endsWith("\n")?"":"\n"));
+                                Out.sayWithTime("[CONN-"+pass+"]"+msg+(msg.endsWith("\n")?"":"\n"));
                             if (msg.contains("speed")){
                                 int speedIdx=msg.indexOf("m ");
                                 String[] speedSS=msg.substring(speedIdx+2,msg.indexOf("H/s")-1).split(" ");
                                 if (!speedSS[0].equalsIgnoreCase("n/a")){
                                     this.rate10s=Float.parseFloat(speedSS[0]);
+                                }else{
+                                    this.rate10s=0;
                                 }
                                 if (!speedSS[1].equalsIgnoreCase("n/a")){
                                     this.rate60s=Float.parseFloat(speedSS[1]);
+                                }else{
+                                    this.rate60s=0;
                                 }
                                 if (!speedSS[2].equalsIgnoreCase("n/a")){
                                     this.rate15m=Float.parseFloat(speedSS[2]);
+                                }else {
+                                    this.rate15m=0;
                                 }
                                 this.lsUpdateTime=TimeUtil.millsToMMDDHHmmSS(new Date().getTime());
                             }else if(msg.contains("accepted")){
@@ -96,7 +115,8 @@ public class Listener extends Thread{
                     }
                 }
             }catch (Exception e){
-                System.out.println("[CONN]close conn pass:"+pass);
+                Out.sayWithTimeLn("[CONN]close conn pass:"+pass);
+//                e.printStackTrace();
                 kill();
             }
         }
@@ -119,7 +139,7 @@ public class Listener extends Thread{
                 conns.add(new AXClientConn(socket.accept()));
             }
         }catch (Exception e){
-            System.out.println("[LISTENER]cannot continue listening");
+            Out.sayWithTimeLn("[LISTENER]cannot continue listening");
         }
     }
 
