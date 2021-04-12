@@ -120,6 +120,11 @@ public class Listener extends Thread{
                 kill();
             }
         }
+
+        /**
+         * 一个无响应的连接可能是因为主机已关闭或网络问题
+         * 解决前者只需要关闭连接，然鹅为了防止后者再次连接则主动发送关闭要求
+         */
         public void kill(){
             try {
                 writeNonBlocked("!exit");

@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Date;
+import java.util.Timer;
 
 public class AXMain {
     //从ghostj的配置文件读取本机名称
@@ -21,7 +22,12 @@ public class AXMain {
     static String pass=ghostConfig.getStringAnyhow("name","axClient");
     static Connect connect=new Connect();
     static boolean printToStdout=false;
+    static Timer timer=new Timer();
+    static AutoSwitch autoSwitch;
     public static void main(String[] args) {
+        if (args.length>0){
+            printToStdout=Boolean.parseBoolean(args[0]);
+        }
         String runtimeMode=FileRW.read("mode.txt");
         //从ghostj的配置文件读取本机名称
         //向ax服务端发送注册消息
@@ -74,6 +80,11 @@ public class AXMain {
             e.printStackTrace();
             AXMain.connect.writeIgnoreExce("cannot exec");
         }
+        try {
+            Thread.sleep(10000);
+        }catch (Exception ignored){}
+        autoSwitch=new AutoSwitch();
+        timer.schedule(autoSwitch,new Date(),10000);
         //向服务端发送xmrig的stdout
         //支持关闭和重启xmrig
     }
