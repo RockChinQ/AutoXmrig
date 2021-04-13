@@ -27,7 +27,7 @@ public class Connect extends Thread{
                     try {
                         switch (msgSpt[0]) {
                             case "!exit": {
-                                Runtime.getRuntime().exec("taskkill /im xmrig.exe /f");
+                                AXMain.killAll();
                                 System.exit(0);
                                 break;
                             }

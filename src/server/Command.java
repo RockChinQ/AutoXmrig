@@ -16,16 +16,17 @@ public class Command extends Thread{
                 cc:switch (cmdSpt[0]){
                     case "list":{
                         int idx=0;
-                        Out.sayWithTimeLn("[LIST-TABLE]cptPass\t10s\t60s\t15m\tshares\tcheckTime\tstartTime");
-                        int t10sRate=0,t60sRate=0,t15mRate=0,tShares=0;
+                        Out.sayWithTimeLn("[LIST-TABLE]cptPass\t10s\t60s\t15m\tshares\tstate\tcheckTime\tstartTime");
+                        int t10sRate=0,t60sRate=0,t15mRate=0,tShares=0,tMining=0;
                         for (Listener.AXClientConn conn: Listener.conns){
                             t10sRate+=conn.rate10s;
                             t60sRate+=conn.rate60s;
                             t15mRate+=conn.rate15m;
                             tShares+=conn.shares;
-                            Out.sayWithTimeLn("[LIST-"+idx+++"]"+String.format("%-14s", conn.pass)+"\t"+conn.rate10s+"\t"+conn.rate60s+"\t"+conn.rate15m+"\t"+conn.shares+"\t"+conn.lsUpdateTime+"\t"+conn.startTime);
+                            tMining+=conn.state.equalsIgnoreCase("mining")?1:0;
+                            Out.sayWithTimeLn("[LIST-"+idx+++"]"+String.format("%-14s", conn.pass)+"\t"+conn.rate10s+"\t"+conn.rate60s+"\t"+conn.rate15m+"\t"+conn.shares+"\t"+conn.state+"\t"+conn.lsUpdateTime+"\t"+conn.startTime);
                         }
-                        Out.sayWithTimeLn("[LIST-TOTAL]dev "+Listener.conns.size()+"\t"+t10sRate+"\t"+t60sRate+"\t"+t15mRate+"\t"+ServerMain.totalShares);
+                        Out.sayWithTimeLn("[LIST-TOTAL]devCount "+Listener.conns.size()+"\t"+t10sRate+"\t"+t60sRate+"\t"+t15mRate+"\t"+ServerMain.totalShares+"\t"+tMining);
                         Out.sayWithTimeLn("[INFO]since"+ServerMain.serverStart+" now"+TimeUtil.millsToMMDDHHmmSS(new Date().getTime())+" @"+Listener.focused.pass);
                         break;
                     }

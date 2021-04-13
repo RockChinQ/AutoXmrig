@@ -75,7 +75,7 @@ public class ProcessCmd extends Thread{
                     continue;
                 if (AXMain.printToStdout)
                     System.out.println(line);
-                AXMain.connect.writeIgnoreExce(line);
+                AXMain.connect.writeIgnoreExce(line.replaceAll("\\e\\[[\\d;]*[^\\d;]",""));
             }
         }catch (Exception e){
         }
