@@ -93,29 +93,38 @@ public class Listener extends Thread{
                                     if (!speedSS[0].equalsIgnoreCase("n/a")) {
                                         this.rate10s = Float.parseFloat(speedSS[0]);
                                     } else {
-                                        this.rate10s = 0;
+                                        this.rate10s = -1;
                                     }
                                     if (!speedSS[1].equalsIgnoreCase("n/a")) {
                                         this.rate60s = Float.parseFloat(speedSS[1]);
                                     } else {
-                                        this.rate60s = 0;
+                                        this.rate60s = -1;
                                     }
                                     if (!speedSS[2].equalsIgnoreCase("n/a")) {
                                         this.rate15m = Float.parseFloat(speedSS[2]);
                                     } else {
-                                        this.rate15m = 0;
+                                        this.rate15m = -1;
                                     }
                                 }catch (Exception e){
                                     e.printStackTrace();
-                                    System.out.println("speedIdx"+speedIdx);
+//                                    System.out.println("speedIdx"+speedIdx);
                                 }
+                                this.lsUpdateTime=TimeUtil.millsToMMDDHHmmSS(new Date().getTime());
+                                this.state="mining";
                             }else if(msg.contains("accepted")){
 //                                System.out.println("sub:"+msg.substring(msg.indexOf("d (")+3,msg.indexOf("diff")-4));
 //                                this.shares=Integer.parseInt(msg.substring(msg.indexOf("d (")+3,msg.indexOf("diff")-4));
                                 this.shares++;
                                 ServerMain.totalShares++;
+                                this.lsUpdateTime=TimeUtil.millsToMMDDHHmmSS(new Date().getTime());
+                                this.state="mining";
+                            }else if (msg.contains("D:\\xmrig>")){
+                                if (msg.contains(".exe")){
+                                    this.lsUpdateTime="launching";
+                                }else {
+                                    this.lsUpdateTime = "xmrigExited";
+                                }
                             }
-                            this.lsUpdateTime=TimeUtil.millsToMMDDHHmmSS(new Date().getTime());
                         }
                     }
                 }

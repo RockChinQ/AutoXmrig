@@ -6,6 +6,7 @@ import java.io.BufferedWriter;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
 /**
@@ -77,7 +78,11 @@ public class ProcessCmd extends Thread{
                     System.out.println(line);
                 AXMain.connect.writeIgnoreExce(line.replaceAll("\\e\\[[\\d;]*[^\\d;]",""));
             }
-        }catch (Exception e){
+//            InputStreamReader isr=new InputStreamReader(process.getInputStream(),Charset.forName("GBK"));
+//            while (true){
+//
+//            }
+        }catch (Exception ignored){
         }
     }
 

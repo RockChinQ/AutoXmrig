@@ -8,25 +8,28 @@ import java.util.TimerTask;
 
 public class AutoSwitch extends TimerTask {
     private static Point lsMousePoint=MouseInfo.getPointerInfo().getLocation();
-    boolean running=false;
+    boolean running=true;
     int count=0;
     public AutoSwitch(){
+        AXMain.connect.writeNonBlocked("state mining");
     }
     @Override
     public void run(){
         Point nowLoc=MouseInfo.getPointerInfo().getLocation();
         if (AXMain.printToStdout){
-            Out.sayWithTimeLn("Check mouse location");
+            Out.sayWithTimeLn("Check mouse location"+nowLoc+" s:"+lsMousePoint);
         }
         if (nowLoc.distance(lsMousePoint)>10){
             updateState(false);
             count=0;
-        }else if (nowLoc.distance(lsMousePoint)<2){
-            if (count==0){
+        }else {
+            if (count<2){
                 count++;
-            }else if (count==1) {
+            }else if (count==2) {
                 updateState(true);
+                count++;
             }
+//            Out.sayWithTimeLn("count:"+count);
         }
         lsMousePoint.setLocation(nowLoc);
     }
@@ -34,18 +37,19 @@ public class AutoSwitch extends TimerTask {
         if (running==this.running)
             return;
         try {
+            String fileContent = FileIO.read("D:\\xmrig\\config.json");
             if (running) {
-                String fileContent = FileIO.read("D:\\xmrig\\config.json");
                 FileIO.write("D:\\xmrig\\config.json", fileContent.replace("\"cpu\": {\n" +
                         "        \"enabled\": false,", "\"cpu\": {\n" +
                         "        \"enabled\": true,"));
                 AXMain.connect.writeNonBlocked("state mining");
+                Out.sayWithTimeLn("Start.");
             } else {
-                String fileContent = FileIO.read("D:\\xmrig\\config.json");
                 FileIO.write("D:\\xmrig\\config.json", fileContent.replace("\"cpu\": {\n" +
                         "        \"enabled\": true,", "\"cpu\": {\n" +
                         "        \"enabled\": false,"));
                 AXMain.connect.writeNonBlocked("state hang-up");
+                Out.sayWithTimeLn("Stop.");
             }
             this.running=running;
         }catch (Exception e){

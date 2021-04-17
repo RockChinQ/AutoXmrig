@@ -22,12 +22,15 @@ public class Connect extends Thread{
                 tcpr=new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 writeNonBlocked("pass "+AXMain.pass);
                 writeNonBlocked("start "+TimeUtil.millsToMMDDHHmmSS(new Date().getTime()));
+                try {
+                    writeNonBlocked("state " + (AXMain.autoSwitch.running ? "mining" : "hang-up"));
+                }catch (Exception ignored){}
                 while(true){
                     String[] msgSpt=tcpr.readLine().split(" ");
                     try {
                         switch (msgSpt[0]) {
                             case "!exit": {
-                                AXMain.killAll();
+                                AXMain.killAllMiner();
                                 System.exit(0);
                                 break;
                             }
@@ -45,7 +48,9 @@ public class Connect extends Thread{
                         AXMain.connect.writeNonBlocked("[CONNECT]command error");
                     }
                 }
-            } catch (Exception ignored) {}
+            } catch (Exception ignored) {
+                ignored.printStackTrace();
+            }
             try{Thread.sleep(10000);}catch (Exception ignored){}
         }
     }
