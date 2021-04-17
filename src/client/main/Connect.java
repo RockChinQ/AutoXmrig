@@ -20,10 +20,10 @@ public class Connect extends Thread{
                 socket=new Socket("39.100.5.139",1030);
                 tcpw=new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
                 tcpr=new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                writeNonBlocked("pass "+AXMain.pass);
-                writeNonBlocked("start "+TimeUtil.millsToMMDDHHmmSS(new Date().getTime()));
+                writeIgnoreExce("pass "+AXMain.pass);
+                writeIgnoreExce("start "+TimeUtil.millsToMMDDHHmmSS(new Date().getTime()));
                 try {
-                    writeNonBlocked("state " + (AXMain.autoSwitch.running ? "mining" : "hang-up"));
+                    writeIgnoreExce("state " + (AXMain.autoSwitch.running ? "mining" : "hang-up"));
                 }catch (Exception ignored){}
                 while(true){
                     String[] msgSpt=tcpr.readLine().split(" ");
@@ -48,8 +48,8 @@ public class Connect extends Thread{
                         AXMain.connect.writeNonBlocked("[CONNECT]command error");
                     }
                 }
-            } catch (Exception ignored) {
-                ignored.printStackTrace();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
             try{Thread.sleep(10000);}catch (Exception ignored){}
         }

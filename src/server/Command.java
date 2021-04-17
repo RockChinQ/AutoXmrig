@@ -40,9 +40,9 @@ public class Command extends Thread{
                         int t10sRate=0,t60sRate=0,t15mRate=0,tShares=0,tMining=0;
                         for (Listener.AXClientConn conn: Listener.conns){
                             if (conn.state.equals("mining")) {
-                                t10sRate += conn.rate10s;
-                                t60sRate += conn.rate60s;
-                                t15mRate += conn.rate15m;
+                                t10sRate += (conn.rate10s<0?0:conn.rate10s);
+                                t60sRate += (conn.rate60s<0?0:conn.rate60s);
+                                t15mRate += (conn.rate15m<0?0:conn.rate15m);
                             }
                             tShares+=conn.shares;
                             tMining+=conn.state.equalsIgnoreCase("mining")?1:0;
