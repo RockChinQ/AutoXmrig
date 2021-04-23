@@ -23,14 +23,17 @@ public class AutoSwitch extends TimerTask {
         if (AXMain.printToStdout){
             Out.sayWithTimeLn("Check mouse location"+nowLoc+" s:"+lsMousePoint);
         }
+        boolean ecRunning=isProcessExist("EasiCamera.exe");
         if (nowLoc.distance(lsMousePoint)>10){
             updateState(false);
-            cameraPausePeriod=0;
+            cameraPausePeriod=20;
             count=0;
-        }else if (isProcessExist("EasiCamera.exe")&&cameraPausePeriod<23) {
+        }else if (ecRunning&&cameraPausePeriod<23) {
             updateState(false);
             cameraPausePeriod++;
             count=0;
+        }else if (!ecRunning){
+            cameraPausePeriod=0;
         }else{
             if (count<2){
                 count++;
