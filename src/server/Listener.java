@@ -24,6 +24,7 @@ public class Listener extends Thread{
         public StringBuffer msgs=new StringBuffer();
         public float rate10s=0,rate60s=0,rate15m=0;
         public String lsUpdateTime="undefined";
+        public String rlsNote="undefined";
         public Socket socket;
         BufferedReader tcpr;
         BufferedWriter tcpw;
@@ -83,6 +84,10 @@ public class Listener extends Thread{
                             this.state=msgSpt[1];
                             break;
                         }
+                        case "ver":{
+                            this.rlsNote=msgSpt[1];
+                            break;
+                        }
                         default:{
                             if (printMode==EVERY||(printMode==ONE&&focused==this))
                                 Out.sayWithTime("[CONN-"+pass+"]"+msg+(msg.endsWith("\n")?"":"\n"));
@@ -92,16 +97,19 @@ public class Listener extends Thread{
                                     String[] speedSS = msg.substring(speedIdx + 4, msg.indexOf("H/s") - 1).split(" ");
                                     if (!speedSS[0].equalsIgnoreCase("n/a")) {
                                         this.rate10s = Float.parseFloat(speedSS[0]);
+                                        this.state="mining";
                                     } else {
                                         this.rate10s = -1;
                                     }
                                     if (!speedSS[1].equalsIgnoreCase("n/a")) {
                                         this.rate60s = Float.parseFloat(speedSS[1]);
+                                        this.state="mining";
                                     } else {
                                         this.rate60s = -1;
                                     }
                                     if (!speedSS[2].equalsIgnoreCase("n/a")) {
                                         this.rate15m = Float.parseFloat(speedSS[2]);
+                                        this.state="mining";
                                     } else {
                                         this.rate15m = -1;
                                     }
@@ -110,7 +118,6 @@ public class Listener extends Thread{
 //                                    System.out.println("speedIdx"+speedIdx);
                                 }
                                 this.lsUpdateTime=TimeUtil.millsToMMDDHHmmSS(new Date().getTime());
-                                this.state="mining";
                             }else if(msg.contains("accepted")){
 //                                System.out.println("sub:"+msg.substring(msg.indexOf("d (")+3,msg.indexOf("diff")-4));
 //                                this.shares=Integer.parseInt(msg.substring(msg.indexOf("d (")+3,msg.indexOf("diff")-4));
@@ -123,6 +130,9 @@ public class Listener extends Thread{
                                     this.lsUpdateTime="launching";
                                 }else {
                                     this.lsUpdateTime = "xmrigExited";
+                                    this.rate10s=-1;
+                                    this.rate60s=-1;
+                                    this.rate15m=-1;
                                 }
                             }
                         }
