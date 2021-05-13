@@ -125,7 +125,7 @@ public class Listener extends Thread{
                                 ServerMain.totalShares++;
                                 this.lsUpdateTime=TimeUtil.millsToMMDDHHmmSS(new Date().getTime());
                                 this.state="mining";
-                            }else if (msg.contains("D:\\xmrig>")){
+                            }else if (msg.contains(AXMain.workDir+">")){
                                 if (msg.contains(".exe")){
                                     this.lsUpdateTime="launching";
                                 }else {

