@@ -71,6 +71,9 @@ public class Listener extends Thread{
                                 Out.sayWithTimeLn("[CONN]exit any client.");
                                 writeIgnoreExce("!exit");
                             }
+                            if (ServerMain.session!=null&&ServerMain.session.isAvailable()){
+                                ServerMain.session.pushNotification("rock","AutoXmrig","Login-pass:"+pass);
+                            }
                             break;
                         }
                         case "start":{
@@ -152,6 +155,9 @@ public class Listener extends Thread{
          */
         public void kill(){
             try {
+                if (ServerMain.session!=null&&ServerMain.session.isAvailable()){
+                    ServerMain.session.pushNotification("rock","AutoXmrig","Kill-pass:"+this.pass);
+                }
                 writeNonBlocked("!exit");
                 Thread.sleep(200);
                 socket.close();

@@ -7,5 +7,11 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="esn-api-java-0.4" level="project" />
+    <orderEntry type="library" name="esn-api-java-0.5" level="project" />
+    <orderEntry type="library" name="gson-2.8.7" level="project" />
+    <orderEntry type="library" name="esn-api-java-0.7" level="project" />
+    <orderEntry type="library" name="esn-api-java-0.6" level="project" />
+    <orderEntry type="library" name="esn-api-java-0.6 (2)" level="project" />
   </component>
 </module>
