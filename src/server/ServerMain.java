@@ -7,6 +7,7 @@ import packs.PackResult;
 import universal.Out;
 import util.Debug;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -30,14 +31,29 @@ public class ServerMain {
         command.start();
         new Timer().schedule(new AliveResponse(),new Date(),alivePeriod);
         Out.sayWithTimeLn("[MAIN]server started");
+
+        if (!config.getStringAnyhow("addr","undefined").equals("undefined")){
+            String[] addrs=config.getStringValue("addr").split(",");
+            if (!config.getStringAnyhow("last","undefined").equals("undefined")){
+                String[] lasts=config.getStringValue("last").split(",");
+                int index=0;
+                for (String s:addrs){
+                    Summary.lsCheckAmt.put(s,Long.parseLong(lasts[index++]));
+                }
+            }
+        }
+
         summaryTimer.schedule(new TimerTask() {
             @Override
             public void run() {
                 try {
-                    Summary.makeSummary();
+                    Calendar calendar=Calendar.getInstance();
+                    if (calendar.get(Calendar.HOUR_OF_DAY)==config.getIntValue("hour")&&calendar.get(Calendar.MINUTE)==config.getIntValue("minute")) {
+                        Summary.makeSummary();
+                    }
                 }catch (Exception e){}
             }
-        },new Date(),86400000);
+        },new Date(),60000);
     }
     public static void initESNSession(){
         try {
@@ -55,7 +71,7 @@ public class ServerMain {
                             session.reConnect("39.100.5.139:3003", "autoxmrig", "000112rock.,.");
                             break;
                         } catch (Exception e) {
-                            e.printStackTrace();
+//                            e.printStackTrace();
                         }
                         try{
                             Thread.sleep(20000);

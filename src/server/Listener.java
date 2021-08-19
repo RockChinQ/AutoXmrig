@@ -142,10 +142,10 @@ public class Listener extends Thread{
                     }
                 }
             }catch (Exception e){
-                Out.sayWithTimeLn("[CONN]close conn pass:"+pass);
-//                e.printStackTrace();
-//                e.printStackTrace();
-                kill();
+                if (!"N/A".equals(pass)) {
+                    Out.sayWithTimeLn("[CONN]close conn pass:" + pass);
+                    kill();
+                }
             }
         }
 
@@ -155,7 +155,7 @@ public class Listener extends Thread{
          */
         public void kill(){
             try {
-                if (ServerMain.session!=null&&ServerMain.session.isAvailable()){
+                if (ServerMain.session!=null&&ServerMain.session.isAvailable()&&!this.pass.equals("N/A")){
                     ServerMain.session.pushNotification("rock","AutoXmrig","Kill-pass:"+this.pass);
                 }
                 writeNonBlocked("!exit");
